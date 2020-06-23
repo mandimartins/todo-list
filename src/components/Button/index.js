@@ -1,13 +1,15 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
-import { Feather } from '@expo/vector-icons';
 
 import Colors from '../../constants/colors';
 
-const Button = () => {
+const Button = (props) => {
   return (
-    <TouchableOpacity style={styles.container}>
-      <Feather name="plus" size={32} color={Colors.primary} />
+    <TouchableOpacity
+      {...props}
+      style={{ ...styles.container, ...props.style }}
+    >
+      {props.children}
     </TouchableOpacity>
   );
 };
@@ -17,12 +19,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.tertiary,
     elevation: 5,
     borderRadius: 50,
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'flex-end',
-    marginHorizontal: 20,
+    marginHorizontal: 10,
   },
 });
 
