@@ -11,7 +11,13 @@ const Card = (props) => {
     <Box>
       <View style={styles.container}>
         <Text style={styles.title}>{props.title}</Text>
-        <Feather name="trash-2" size={20} color={Colors.tertiary} />
+        <Feather
+          onPress={() => props.deleteItem(props.id)}
+          name="trash-2"
+          size={22}
+          color={Colors.tertiary}
+          style={{ alignSelf: 'center' }}
+        />
       </View>
     </Box>
   );
@@ -25,6 +31,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     color: Colors.fontDark,
+    width: '90%',
   },
 });
 export default Card;
