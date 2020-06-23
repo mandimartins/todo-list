@@ -1,16 +1,17 @@
 import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
 import Card from '../Card';
 
-const List = () => {
+const List = (props) => {
   return (
-    <ScrollView style={styles.container}>
-      <Card title="One task" />
-      <Card title="One task" />
-      <Card title="One task" />
-      <Card title="One task" />
-      <Card title="One task" />
-    </ScrollView>
+    <FlatList
+      data={props.todoList}
+      renderItem={({ item }) => (
+        <Card deleteItem={props.deleteTodo} id={item.id} title={item.todo} />
+      )}
+      keyExtractor={(item) => item.id}
+      style={styles.container}
+    />
   );
 };
 
