@@ -1,14 +1,10 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
 import Colors from '../../constants/colors';
 
 const Box = (props) => {
-  return (
-    <TouchableOpacity style={styles.container}>
-      {props.children}
-    </TouchableOpacity>
-  );
+  return <View style={styles.container}>{props.children}</View>;
 };
 
 const styles = StyleSheet.create({
