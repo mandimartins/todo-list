@@ -13,8 +13,8 @@ const Header = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.tertiary,
-    height: 90,
+    backgroundColor: Colors.secondary,
+    height: 40,
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
