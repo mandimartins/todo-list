@@ -3,14 +3,12 @@ import { View, StyleSheet, TextInput } from 'react-native';
 
 import Colors from '../../constants/colors';
 
-const Input = () => {
-  const [Input, setInput] = useState('');
-
+const Input = (props) => {
   return (
     <View style={styles.container}>
       <TextInput
+        {...props}
         style={styles.input}
-        placeholder="Enter a task"
         placeholderTextColor={Colors.secondary}
       />
     </View>
