@@ -7,7 +7,12 @@ const List = (props) => {
     <FlatList
       data={props.todoList}
       renderItem={({ item }) => (
-        <Card deleteItem={props.deleteTodo} id={item.id} title={item.todo} />
+        <Card
+          deleteTodo={props.deleteTodo}
+          setCheckBox={props.setCheckBox}
+          id={item.id}
+          title={item.todo}
+        />
       )}
       keyExtractor={(item) => item.id}
       style={styles.container}

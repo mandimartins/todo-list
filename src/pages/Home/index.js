@@ -25,8 +25,11 @@ export default function App({ navigation }) {
     setSearchInput(value);
   };
 
+  const setCheckBoxSelection = (setCheckBox) => {
+    setCheckBox(true);
+  };
+
   const handleAddTodo = () => {
-    // add to database sqlite
     if (!searchInput) return;
     setIsListEmpty(false);
     const id = `${Math.random()}.${searchInput}.${Math.random()}`;
@@ -69,7 +72,11 @@ export default function App({ navigation }) {
             </Text>
           </View>
         ) : (
-          <List todoList={todos} deleteTodo={handleDeleteTodo} />
+          <List
+            todoList={todos}
+            deleteTodo={handleDeleteTodo}
+            setCheckBox={setCheckBoxSelection}
+          />
         )}
         <View style={styles.input}>
           <View style={styles.buttonContainer}>
