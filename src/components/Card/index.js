@@ -16,7 +16,7 @@ const Card = (props) => {
   const moveCard = () => {
     Animated.timing(leftValue, {
       toValue: 1000,
-      duration: 1000,
+      duration: 500,
       useNativeDriver: true,
     }).start(handleCheckBox);
   };
