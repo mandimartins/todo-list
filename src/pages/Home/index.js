@@ -25,10 +25,6 @@ export default function App({ navigation }) {
     setSearchInput(value);
   };
 
-  const setCheckBoxSelection = (setCheckBox) => {
-    setCheckBox(true);
-  };
-
   const handleAddTodo = () => {
     if (!searchInput) return;
     setIsListEmpty(false);
@@ -56,7 +52,7 @@ export default function App({ navigation }) {
                 width: 150,
                 height: 105,
                 alignSelf: 'center',
-                marginTop: 100,
+                marginTop: 70,
                 opacity: 0.8,
               }}
               source={background}
@@ -72,11 +68,7 @@ export default function App({ navigation }) {
             </Text>
           </View>
         ) : (
-          <List
-            todoList={todos}
-            deleteTodo={handleDeleteTodo}
-            setCheckBox={setCheckBoxSelection}
-          />
+          <List todoList={todos} deleteTodo={handleDeleteTodo} />
         )}
         <View style={styles.input}>
           <View style={styles.buttonContainer}>
@@ -112,7 +104,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   input: {
-    height: 120,
+    height: 110,
     justifyContent: 'space-between',
   },
   buttonContainer: {
