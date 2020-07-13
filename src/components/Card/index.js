@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 
@@ -6,16 +6,16 @@ import Colors from '../../constants/colors';
 
 const Card = (props) => {
   const [isSelected, setIsSelected] = useState(false);
-  const leftValue = useState(new Animated.Value(0))[0];
+  const opacityValue = useRef(new Animated.Value(1)).current;
 
   const handleCheckBox = () => {
-    props.setCheckBox(setIsSelected);
+    setIsSelected(true);
     props.deleteTodo(props.id);
   };
 
   const moveCard = () => {
-    Animated.timing(leftValue, {
-      toValue: 1000,
+    Animated.timing(opacityValue, {
+      toValue: 0,
       duration: 500,
       useNativeDriver: true,
     }).start(handleCheckBox);
@@ -25,11 +25,7 @@ const Card = (props) => {
     <Animated.View
       style={{
         ...styles.animated,
-        transform: [
-          {
-            translateX: leftValue,
-          },
-        ],
+        opacity: opacityValue,
       }}
     >
       <View style={styles.container}>
