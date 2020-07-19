@@ -1,33 +1,44 @@
 import * as SQLite from 'expo-sqlite';
 
-const db = SQLite.openDatabase('tdotest.db');
+const db = SQLite.openDatabase('tdotest3.db');
 
 db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () =>
   console.log('Foreign keys turned on')
 );
 
-export const init = () => {
+export const createListsTable = () => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((trx) => {
       trx.executeSql(
-        `CREATE TABLE IF NOT EXISTS lists (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT NOT NULL);
-
-          CREATE TABLE todos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            lists_id INTEGER NOT NULL
-            FOREIGN KEY (lists_id) REFERENCES lists(id)
-           );
-        `,
+        `
+      CREATE TABLE IF NOT EXISTS lists (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL);
+      `,
         [],
-        () => {
-          resolve();
-        },
-        (_, error) => {
-          reject(error);
-        }
+        () => resolve(),
+        (_, error) => reject(error)
+      );
+    });
+  });
+  return promise;
+};
+
+export const createTodosTable = () => {
+  const promise = new Promise((resolve, reject) => {
+    db.transaction((trx) => {
+      trx.executeSql(
+        `
+      CREATE TABLE IF NOT EXISTS todos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        lists_id INTEGER NOT NULL,
+        FOREIGN KEY (lists_id) REFERENCES lists(id)
+       );
+      `,
+        [],
+        () => resolve(),
+        (_, error) => reject(error)
       );
     });
   });
@@ -80,6 +91,25 @@ export const insertDefaultValueIntoList = (name) => {
   return promise;
 };
 
+export const insertNewTask = (task, listFk) => {
+  const promise = new Promise((resolve, reject) => {
+    db.transaction((trx) => {
+      trx.executeSql(
+        `
+          INSERT INTO 
+            todos (name,lists_id)
+          VALUES
+            (?,?)
+        `,
+        [task, listFk],
+        (_, success) => resolve(success),
+        (_, error) => reject(error)
+      );
+    });
+  });
+  return promise;
+};
+
 export const selectAllLists = () => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((trx) => {
@@ -98,25 +128,6 @@ export const selectAllLists = () => {
   return promise;
 };
 
-export const insertIntoTodo = () => {
-  const promise = new Promise((resolve, reject) => {
-    db.transaction((trx) => {
-      trx.executeSql(
-        'INSERT INTO todos (name,lists_id) VALUES (?, ?)',
-        ['Walk the dog', 1],
-        (_, success) => {
-          resolve(success);
-        },
-        (_, error) => {
-          reject(error);
-        }
-      );
-    });
-  });
-
-  return promise;
-};
-
 export const selectAllTodos = () => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((trx) => {
@@ -129,6 +140,22 @@ export const selectAllTodos = () => {
         (_, error) => {
           reject(error);
         }
+      );
+    });
+  });
+  return promise;
+};
+
+export const deleteTodo = (id) => {
+  const promise = new Promise((resolve, reject) => {
+    db.transaction((trx) => {
+      trx.executeSql(
+        `
+        DELETE FROM todos WHERE id = ?
+      `,
+        [id],
+        (_, success) => resolve(),
+        (_, error) => reject(error)
       );
     });
   });
