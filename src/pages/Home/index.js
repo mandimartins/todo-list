@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   KeyboardAvoidingView,
@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { FontAwesome } from '@expo/vector-icons';
-
 import background from '../../../assets/background/Tasks.png';
 
 import Colors from '../../constants/colors';
@@ -16,30 +15,74 @@ import List from '../../components/List';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 
-export default function App({ navigation }) {
-  const [searchInput, setSearchInput] = useState('');
+import {
+  createListsTable,
+  createTodosTable,
+  selectAllTodos,
+  insertDefaultValueIntoList,
+  insertNewTask,
+  deleteTodo,
+} from '../../database';
+
+export default function App({ route, navigation }) {
+  const [textInput, setTextInput] = useState('');
   const [todos, setTodos] = useState([]);
   const [isListEmpty, setIsListEmpty] = useState(true);
+  const [defaultTable, setDefaultTable] = useState(1);
 
-  const handleSearchInput = (value) => {
-    setSearchInput(value);
+  const handleTextInput = (value) => {
+    setTextInput(value);
   };
 
   const handleAddTodo = () => {
-    if (!searchInput) return;
-    setIsListEmpty(false);
-    const id = `${Math.random()}.${searchInput}.${Math.random()}`;
-    const newTodos = [{ id, todo: searchInput }, ...todos];
-    setTodos(newTodos);
-    setSearchInput('');
+    if (!textInput) return;
+    insertNewTask(textInput, defaultTable).then(({ insertId }) => {
+      setTodos((prevItens) => [
+        ...prevItens,
+        { id: insertId, name: textInput },
+      ]);
+      setTextInput('');
+      setIsListEmpty(false);
+    });
   };
 
   const handleDeleteTodo = (id) => {
     setTodos((prevItems) => {
       if (prevItems.length <= 1) setIsListEmpty(true);
+      deleteTodo(id).catch((error) => console.log(error));
       return prevItems.filter((item) => item.id !== id);
     });
   };
+
+  //update when custom item is added
+  useEffect(() => {
+    const updateList = () => {
+      if (!route.params) return;
+      const { id } = route.params;
+      const { name } = route.params;
+      setTodos((prevItems) => [...prevItems, { id, name }]);
+      setIsListEmpty(false);
+    };
+    updateList();
+  }, [route.params]);
+
+  useEffect(() => {
+    createListsTable().catch((error) => console.log(error));
+    createTodosTable().catch((error) => console.log(error));
+    insertDefaultValueIntoList('Defaul').catch((error) => console.log(error));
+
+    selectAllTodos()
+      .then(({ rows: { _array } }) => {
+        if (_array.length !== 0) {
+          setTodos([..._array]);
+          setIsListEmpty(false);
+        } else {
+          setTodos([..._array]);
+          setIsListEmpty(true);
+        }
+      })
+      .catch((error) => console.log(error));
+  }, []);
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }}>
@@ -87,9 +130,9 @@ export default function App({ navigation }) {
           </View>
           <Input
             placeholder="Enter a task"
-            onChangeText={handleSearchInput}
+            onChangeText={handleTextInput}
             onSubmitEditing={handleAddTodo}
-            value={searchInput}
+            value={textInput}
           />
         </View>
       </View>

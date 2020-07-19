@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import Form from './Form';
 import Colors from '../../constants/colors';
 
-const CustomItem = () => {
+const CustomItem = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
@@ -12,7 +12,7 @@ const CustomItem = () => {
           Adicione tarefas a uma lista existente ou crie uma nova lista agora
         </Text>
       </View>
-      <Form />
+      <Form navigation={navigation} />
     </View>
   );
 };

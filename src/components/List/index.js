@@ -7,9 +7,9 @@ const List = (props) => {
     <FlatList
       data={props.todoList}
       renderItem={({ item }) => (
-        <Card deleteTodo={props.deleteTodo} id={item.id} title={item.todo} />
+        <Card deleteTodo={props.deleteTodo} id={item.id} title={item.name} />
       )}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => String(item.id)}
       style={styles.container}
     />
   );
