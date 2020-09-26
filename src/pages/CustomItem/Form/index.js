@@ -6,31 +6,33 @@ import Button from '../../../components/Button';
 
 import Colors from '../../../constants/colors';
 
+import DateTimePicker from '../../../components/DateTImePicker';
+
 import { selectAllLists, insertNewTask } from '../../../database';
 
+import { format } from 'date-fns';
+
 const Form = ({ navigation }) => {
+  const d = new Date();
+  const [date, setDate] = useState(
+    new Date(
+      d.getFullYear(),
+      d.getMonth(),
+      d.getDate(),
+      d.getHours(),
+      d.getMinutes(),
+      0,
+      0
+    )
+  );
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
+
+  const [task, setTask] = useState('');
   const [lists, setLists] = useState([]);
   const [selectedListItem, setSelectedListItem] = useState({
     index: 0,
   });
-
-  const [task, setTask] = useState('');
-
-  const handleTaskInput = (value) => {
-    setTask(value);
-  };
-
-  const handleCustomTaskAdition = () => {
-    const listItem = lists[selectedListItem.index];
-    insertNewTask(task, listItem.id)
-      .then(({ insertId }) => {
-        navigation.navigate('Home', {
-          id: insertId,
-          name: task,
-        });
-      })
-      .catch((error) => console.log(error));
-  };
 
   useEffect(() => {
     selectAllLists()
@@ -41,60 +43,122 @@ const Form = ({ navigation }) => {
       .catch((error) => console.log(error));
   }, []);
 
+  const onChangeTime = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShow(false);
+    setDate(currentDate);
+  };
+
+  const showMode = (currentMode) => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const showTimepicker = () => {
+    showMode('time');
+  };
+
+  const handleTaskInput = (value) => {
+    setTask(value);
+  };
+
+  const handleCustomTaskAdition = () => {
+    if (!task) return;
+    const listItem = lists[selectedListItem.index];
+
+    insertNewTask(task, listItem.id)
+      .then(({ insertId }) => {
+        navigation.navigate('Home', {
+          id: insertId,
+          name: task,
+        });
+      })
+      .catch((error) => console.log(error));
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.formControl}>
-        <TextInput
-          style={styles.input}
-          placeholder="Adicionar tarefa"
-          onChangeText={handleTaskInput}
-          value={task}
-        />
+    <>
+      <DateTimePicker
+        show={show}
+        date={date}
+        mode={mode}
+        onChange={onChangeTime}
+      />
+      <View style={styles.container}>
+        <View style={styles.formControl}>
+          <TextInput
+            style={styles.input}
+            placeholder="Adicionar tarefa"
+            onChangeText={handleTaskInput}
+            value={task}
+          />
+        </View>
+        <View style={styles.formControl} onPress={showDatepicker}>
+          <TextInput
+            style={styles.dateTimeInput}
+            placeholder="Prazo"
+            editable={false}
+            value={format(date, 'dd/MM/yyyy')}
+          />
+          <FontAwesome
+            name="calendar"
+            size={35}
+            color="black"
+            onPress={showDatepicker}
+          />
+        </View>
+        <View style={styles.formControl}>
+          <TextInput
+            style={styles.dateTimeInput}
+            placeholder="Hora não definida"
+            editable={false}
+            value={format(date, 'hh:mm')}
+          />
+          <FontAwesome
+            name="clock-o"
+            size={35}
+            color="black"
+            onPress={showTimepicker}
+          />
+        </View>
+        <View style={styles.formControl}>
+          <Text style={styles.bold}>Criar nova lista</Text>
+          <FontAwesome name="list" size={24} color="black" />
+        </View>
+        <View style={styles.formControl}>
+          <Text style={styles.bold}>Adicionar à lista</Text>
+          <Picker
+            style={{ height: 50, width: 120 }}
+            onValueChange={(itemValue, itemIndex) => {
+              setSelectedListItem({ index: itemIndex });
+            }}
+          >
+            {lists.length !== 0 ? (
+              lists.map((listItem) => (
+                <Picker.Item
+                  key={listItem.id}
+                  label={listItem.name}
+                  value={listItem.name}
+                />
+              ))
+            ) : (
+              <Picker.Item label="..." value="..." />
+            )}
+          </Picker>
+        </View>
+        <Button style={styles.button} onPress={handleCustomTaskAdition}>
+          <Text style={styles.buttonTitle}>Salvar</Text>
+        </Button>
       </View>
-      <View style={styles.formControl}>
-        <TextInput style={styles.input} placeholder="Prazo" />
-        <FontAwesome name="calendar" size={24} color="black" />
-      </View>
-      <View style={styles.formControl}>
-        <TextInput style={styles.input} placeholder="Hora não definida" />
-        <FontAwesome name="clock-o" size={24} color="black" />
-      </View>
-      <View style={styles.formControl}>
-        <Text style={styles.bold}>Criar nova lista</Text>
-        <FontAwesome name="list" size={24} color="black" />
-      </View>
-      <View style={styles.formControl}>
-        <Text style={styles.bold}>Adicionar à lista</Text>
-        <Picker
-          style={{ height: 50, width: 120 }}
-          onValueChange={(itemValue, itemIndex) => {
-            setSelectedListItem({ index: itemIndex });
-          }}
-        >
-          {lists.length !== 0 ? (
-            lists.map((listItem) => (
-              <Picker.Item
-                key={listItem.id}
-                label={listItem.name}
-                value={listItem.name}
-              />
-            ))
-          ) : (
-            <Picker.Item label="..." value="..." />
-          )}
-        </Picker>
-      </View>
-      <Button style={styles.button}>
-        <Text style={styles.buttonTitle} onPress={handleCustomTaskAdition}>
-          Salvar
-        </Text>
-      </Button>
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {},
   formControl: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -108,8 +172,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     width: '95%',
   },
+  dateTimeInput: {
+    fontSize: 18,
+    width: '70%',
+  },
   bold: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   button: {

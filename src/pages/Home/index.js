@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import {
   StyleSheet,
   KeyboardAvoidingView,
@@ -6,6 +7,7 @@ import {
   Image,
   Text,
 } from 'react-native';
+
 import { StatusBar } from 'expo-status-bar';
 import { FontAwesome } from '@expo/vector-icons';
 import background from '../../../assets/background/Tasks.png';
@@ -55,6 +57,7 @@ export default function App({ route, navigation }) {
   };
 
   //update when custom item is added
+
   useEffect(() => {
     const updateList = () => {
       if (!route.params) return;
