@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 import {
   StyleSheet,
@@ -6,16 +6,18 @@ import {
   View,
   Image,
   Text,
-} from 'react-native';
+} from "react-native";
 
-import { StatusBar } from 'expo-status-bar';
-import { FontAwesome } from '@expo/vector-icons';
-import background from '../../../assets/background/Tasks.png';
+import { StatusBar } from "expo-status-bar";
+import { FontAwesome } from "@expo/vector-icons";
+import background from "../../../assets/background/Tasks.png";
 
-import Colors from '../../constants/colors';
-import List from '../../components/List';
-import Button from '../../components/Button';
-import Input from '../../components/Input';
+import Colors from "../../constants/colors";
+import List from "../../components/List";
+import Button from "../../components/Button";
+import Input from "../../components/Input";
+
+import * as Notifications from "expo-notifications";
 
 import {
   createListsTable,
@@ -24,10 +26,10 @@ import {
   insertDefaultValueIntoList,
   insertNewTask,
   deleteTodo,
-} from '../../database';
+} from "../../database";
 
 export default function App({ route, navigation }) {
-  const [textInput, setTextInput] = useState('');
+  const [textInput, setTextInput] = useState("");
   const [todos, setTodos] = useState([]);
   const [isListEmpty, setIsListEmpty] = useState(true);
   const [defaultTable, setDefaultTable] = useState(1);
@@ -43,36 +45,39 @@ export default function App({ route, navigation }) {
         ...prevItens,
         { id: insertId, name: textInput },
       ]);
-      setTextInput('');
+      setTextInput("");
       setIsListEmpty(false);
     });
   };
 
-  const handleDeleteTodo = (id) => {
+  const handleDeleteTodo = (id, cancelScheduleId) => {
     setTodos((prevItems) => {
       if (prevItems.length <= 1) setIsListEmpty(true);
       deleteTodo(id).catch((error) => console.log(error));
+
+      if (!cancelScheduleId) return;
+      Notifications.cancelAllScheduledNotificationsAsync(cancelScheduleId);
+
       return prevItems.filter((item) => item.id !== id);
     });
   };
 
-  //update when custom item is added
-
   useEffect(() => {
+    //update when custom item is added
     const updateList = () => {
       if (!route.params) return;
-      const { id } = route.params;
-      const { name } = route.params;
-      setTodos((prevItems) => [...prevItems, { id, name }]);
+      const { id, name, cancelScheduleId } = route.params;
+      setTodos((prevItems) => [...prevItems, { id, name, cancelScheduleId }]);
       setIsListEmpty(false);
     };
     updateList();
   }, [route.params]);
 
   useEffect(() => {
+    console.log("I ran on homepage!");
     createListsTable().catch((error) => console.log(error));
     createTodosTable().catch((error) => console.log(error));
-    insertDefaultValueIntoList('Defaul').catch((error) => console.log(error));
+    insertDefaultValueIntoList("Defaul").catch((error) => console.log(error));
 
     selectAllTodos()
       .then(({ rows: { _array } }) => {
@@ -97,7 +102,7 @@ export default function App({ route, navigation }) {
               style={{
                 width: 150,
                 height: 105,
-                alignSelf: 'center',
+                alignSelf: "center",
                 marginTop: 70,
                 opacity: 0.8,
               }}
@@ -106,7 +111,7 @@ export default function App({ route, navigation }) {
             <Text
               style={{
                 color: Colors.fontDark,
-                textAlign: 'center',
+                textAlign: "center",
                 marginTop: 5,
               }}
             >
@@ -120,13 +125,13 @@ export default function App({ route, navigation }) {
           <View style={styles.buttonContainer}>
             <Button
               style={{ backgroundColor: Colors.info }}
-              onPress={() => navigation.navigate('Options')}
+              onPress={() => navigation.navigate("Options")}
             >
               <FontAwesome name="gear" size={30} color={Colors.secondary} />
             </Button>
             <Button
               style={{ backgroundColor: Colors.info }}
-              onPress={() => navigation.navigate('Details')}
+              onPress={() => navigation.navigate("Details")}
             >
               <FontAwesome name="plus" size={30} color={Colors.secondary} />
             </Button>
@@ -147,15 +152,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.primary,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   input: {
     height: 110,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   buttonContainer: {
     padding: 4,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "flex-end",
   },
 });

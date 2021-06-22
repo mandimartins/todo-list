@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
+import React, { useState, useRef } from "react";
+import { View, Text, StyleSheet, Animated } from "react-native";
+import CheckBox from "@react-native-community/checkbox";
 
-import Colors from '../../constants/colors';
+import Colors from "../../constants/colors";
 
 const Card = (props) => {
   const [isSelected, setIsSelected] = useState(false);
@@ -10,7 +10,7 @@ const Card = (props) => {
 
   const handleCheckBox = () => {
     setIsSelected(true);
-    props.deleteTodo(props.id);
+    props.deleteTodo(props.id, props.cancelScheduleId);
   };
 
   const moveCard = () => {
@@ -42,19 +42,19 @@ const Card = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   title: {
     fontSize: 16,
     color: Colors.fontDark,
-    width: '90%',
+    width: "90%",
   },
   animated: {
     backgroundColor: Colors.secondary,
     padding: 15,
-    width: '100%',
+    width: "100%",
     elevation: 2,
     borderRadius: 5,
     marginVertical: 6,

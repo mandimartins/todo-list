@@ -1,16 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
-import { Picker } from '@react-native-community/picker';
-import { FontAwesome } from '@expo/vector-icons';
-import Button from '../../../components/Button';
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, StyleSheet } from "react-native";
+import { Picker } from "@react-native-community/picker";
+import { FontAwesome } from "@expo/vector-icons";
+import Button from "../../../components/Button";
 
-import Colors from '../../../constants/colors';
+import Colors from "../../../constants/colors";
 
-import DateTimePicker from '../../../components/DateTImePicker';
+import DateTimePicker from "../../../components/DateTImePicker";
 
-import { selectAllLists, insertNewTask } from '../../../database';
+import { selectAllLists, insertNewTask } from "../../../database";
 
-import { format } from 'date-fns';
+import { format, Interval } from "date-fns";
+
+import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+  //show notification even inside the app
+  handleNotification: async () => {
+    return {
+      shouldShowAlert: true,
+    };
+  },
+});
 
 const Form = ({ navigation }) => {
   const d = new Date();
@@ -25,10 +36,11 @@ const Form = ({ navigation }) => {
       0
     )
   );
-  const [mode, setMode] = useState('date');
+
+  const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
 
-  const [task, setTask] = useState('');
+  const [task, setTask] = useState("");
   const [lists, setLists] = useState([]);
   const [selectedListItem, setSelectedListItem] = useState({
     index: 0,
@@ -55,11 +67,11 @@ const Form = ({ navigation }) => {
   };
 
   const showDatepicker = () => {
-    showMode('date');
+    showMode("date");
   };
 
   const showTimepicker = () => {
-    showMode('time');
+    showMode("time");
   };
 
   const handleTaskInput = (value) => {
@@ -70,14 +82,25 @@ const Form = ({ navigation }) => {
     if (!task) return;
     const listItem = lists[selectedListItem.index];
 
-    insertNewTask(task, listItem.id)
-      .then(({ insertId }) => {
-        navigation.navigate('Home', {
-          id: insertId,
-          name: task,
-        });
-      })
-      .catch((error) => console.log(error));
+    const notificationId = Notifications.scheduleNotificationAsync({
+      content: {
+        title: "It's time to do your task!",
+        body: task,
+      },
+      trigger: date,
+    });
+
+    notificationId.then((notificationId) => {
+      insertNewTask(task, listItem.id)
+        .then(({ insertId }) => {
+          navigation.navigate("Home", {
+            id: insertId,
+            name: task,
+            cancelScheduleId: notificationId,
+          });
+        })
+        .catch((error) => console.log(error));
+    });
   };
 
   return (
@@ -102,7 +125,7 @@ const Form = ({ navigation }) => {
             style={styles.dateTimeInput}
             placeholder="Prazo"
             editable={false}
-            value={format(date, 'dd/MM/yyyy')}
+            value={format(date, "dd/MM/yyyy")}
           />
           <FontAwesome
             name="calendar"
@@ -116,7 +139,7 @@ const Form = ({ navigation }) => {
             style={styles.dateTimeInput}
             placeholder="Hora não definida"
             editable={false}
-            value={format(date, 'hh:mm')}
+            value={format(date, "hh:mm")}
           />
           <FontAwesome
             name="clock-o"
@@ -160,9 +183,9 @@ const Form = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   formControl: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     backgroundColor: Colors.secondary,
     padding: 12,
     borderRadius: 5,
@@ -170,18 +193,18 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 18,
-    width: '95%',
+    width: "95%",
   },
   dateTimeInput: {
     fontSize: 18,
-    width: '70%',
+    width: "70%",
   },
   bold: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   button: {
-    width: '100%',
+    width: "100%",
     height: 50,
     borderRadius: 5,
     marginHorizontal: 0,
