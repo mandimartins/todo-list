@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+
 import CustomItem from '../pages/CustomItem';
 import Home from '../pages/Home';
 import Options from '../pages/Options';
@@ -9,7 +10,7 @@ import Colors from '../constants/colors';
 
 const Stack = createStackNavigator();
 
-function App() {
+function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -31,4 +32,4 @@ function App() {
   );
 }
 
-export default App;
+export default AppNavigator;
