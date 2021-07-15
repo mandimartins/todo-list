@@ -2,9 +2,7 @@ import * as SQLite from 'expo-sqlite';
 
 const db = SQLite.openDatabase('tdotest3.db');
 
-db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () =>
-  console.log('Foreign keys turned on')
-);
+db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () => console.log('Foreign keys turned on'));
 
 export const createListsTable = () => {
   const promise = new Promise((resolve, reject) => {
@@ -17,7 +15,7 @@ export const createListsTable = () => {
       `,
         [],
         () => resolve(),
-        (_, error) => reject(error)
+        (_, error) => reject(error),
       );
     });
   });
@@ -38,7 +36,7 @@ export const createTodosTable = () => {
       `,
         [],
         () => resolve(),
-        (_, error) => reject(error)
+        (_, error) => reject(error),
       );
     });
   });
@@ -57,7 +55,7 @@ export const hasAnyListName = () => {
         },
         (_, error) => {
           reject(error);
-        }
+        },
       );
     });
   });
@@ -81,7 +79,7 @@ export const insertDefaultValueIntoList = (name) => {
               },
               (_, error) => {
                 reject(error);
-              }
+              },
             );
           });
         }
@@ -103,7 +101,7 @@ export const insertNewTask = (task, listFk) => {
         `,
         [task, listFk],
         (_, success) => resolve(success),
-        (_, error) => reject(error)
+        (_, error) => reject(error),
       );
     });
   });
@@ -121,7 +119,7 @@ export const selectAllLists = () => {
         },
         (_, error) => {
           reject(error);
-        }
+        },
       );
     });
   });
@@ -139,7 +137,7 @@ export const selectAllTodos = () => {
         },
         (_, error) => {
           reject(error);
-        }
+        },
       );
     });
   });
@@ -154,8 +152,8 @@ export const deleteTodo = (id) => {
         DELETE FROM todos WHERE id = ?
       `,
         [id],
-        (_, success) => resolve(),
-        (_, error) => reject(error)
+        (_, success) => resolve(success),
+        (_, error) => reject(error),
       );
     });
   });

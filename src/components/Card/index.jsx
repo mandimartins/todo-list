@@ -1,16 +1,28 @@
-import React, { useState, useRef } from "react";
-import { View, Text, StyleSheet, Animated } from "react-native";
-import CheckBox from "@react-native-community/checkbox";
+import React, { useState, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import {
+  View, Text, Animated,
+} from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
+import { deleteTodoAction } from '../../redux/actions';
 
-import Colors from "../../constants/colors";
+import Colors from '../../constants/colors';
+import { styles } from './styles';
 
 const Card = (props) => {
   const [isSelected, setIsSelected] = useState(false);
   const opacityValue = useRef(new Animated.Value(1)).current;
 
+  const dispatch = useDispatch();
+
+  const handleDeleteTodo = ({ todoId, scheduleId }) => {
+    dispatch(deleteTodoAction({ todoId, scheduleId }));
+  };
+
   const handleCheckBox = () => {
     setIsSelected(true);
-    props.deleteTodo(props.id, props.cancelScheduleId);
+
+    handleDeleteTodo({ todoId: props.todoId, scheduleId: props.scheduleId });
   };
 
   const moveCard = () => {
@@ -40,24 +52,4 @@ const Card = (props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 16,
-    color: Colors.fontDark,
-    width: "90%",
-  },
-  animated: {
-    backgroundColor: Colors.secondary,
-    padding: 15,
-    width: "100%",
-    elevation: 2,
-    borderRadius: 5,
-    marginVertical: 6,
-  },
-});
 export default Card;
