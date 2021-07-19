@@ -57,7 +57,7 @@ export default function App({ navigation }) {
   useEffect(() => {
     createListsTable().catch((error) => console.log(error));
     createTodosTable().catch((error) => console.log(error));
-    insertDefaultValueIntoList('Defaul').catch((error) => console.log(error));
+    insertDefaultValueIntoList('Default').catch((error) => console.log(error));
     memoFetchTodos();
   }, [memoFetchTodos]);
 
