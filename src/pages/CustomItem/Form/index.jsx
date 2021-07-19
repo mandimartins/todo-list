@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { View, Text, TextInput } from 'react-native';
 import { Picker } from '@react-native-community/picker';
@@ -27,8 +27,8 @@ const Form = ({ navigation }) => {
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
 
+  const lists = useSelector((state) => state.lists);
   const [task, setTask] = useState('');
-  const lists = useState([])[0];
   const [selectedListItem, setSelectedListItem] = useState({
     index: 0,
   });
